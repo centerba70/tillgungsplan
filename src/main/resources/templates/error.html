@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+    #errorlist {
+      font-family: Arial, Helvetica, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    #errorlist td, #errorlist th {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    #errorlist tr:nth-child(even){background-color: #f2f2f2;}
+
+    #errorlist tr:hover {background-color: #ddd;}
+
+    #errorlist th {
+      padding-top: 12px;
+      padding-bottom: 12px;
+      text-align: left;
+      background-color: #aa0404;
+      color: white;
+    }
+  </style>
+  <meta charset="UTF-8">
+  <title>Fehler</title>
+</head>
+<body>
+<tr> Einige angegebene Werte sind nicht valid, eine Berechnung des Tillgungsplans ist leider nicht möglich! </tr>
+<br><br>
+<div th:if="${ not#lists.isEmpty(inputErrors)}">
+  <br>
+  <table id="errorlist">
+    <tr>
+      <thead>
+        <th>Feld</th>
+        <th>abgelehnter Wert</th>
+        <th>Fehler Beschreibung</th>
+      </thead>
+    </tr>
+      <tbody>
+      <tr th:each="error : ${inputErrors}">
+        <td th:text="${error.getField()}"></td>
+        <td th:text="${error.getRejectedValue()}"></td>
+        <td th:text="${error.getDefaultMessage()}"></td>
+      </tr>
+      </tbody>
+  </table>
+</div>
+<tr th:text="${tillgungsplanServiceException} ?: ${tillgungsplanServiceException}"> </tr>
+  <br><br>
+  <a href="/">Bitte versuchen Sie es noch mal!</a>
+</body>
+</html>
