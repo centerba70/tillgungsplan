@@ -30,13 +30,9 @@ public class TilgungsplanController implements WebMvcConfigurer {
     }
 
     @PostMapping("/")
-    public String inputForm(@Valid @ModelAttribute("inputForm") InputForm inputForm, BindingResult bindingResult, Model model) {
+    public String inputForm(@Valid InputForm inputForm, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("inputErrors", bindingResult.getFieldErrors());
-                    /*.stream()
-                    .map(fieldError -> String.format("Feld: %s, abgelehnter Wert: %s, Nachricht: %s",
-                            fieldError.getField(), fieldError.getRejectedValue(), fieldError.getDefaultMessage())).collect(
-                            Collectors.joining("; \n"))); */
             return ERROR_PAGE;
         }
         model.addAttribute("tillgungsplanList", tillgungsplanService.calculateTilgung(inputForm));
@@ -46,7 +42,7 @@ public class TilgungsplanController implements WebMvcConfigurer {
     @ExceptionHandler(TilgungsplanServiceException.class)
     public String handleInvoiceScannerServiceException(TilgungsplanServiceException ex, Model model) {
         model.addAttribute("tillgungsplanServiceException", ex.getMessage());
-        return ERROR_PAGE;
+        return ERROR_PAGE;  // TODO: throw some exception
     }
 }
 
@@ -56,11 +52,9 @@ public class TilgungsplanController implements WebMvcConfigurer {
 * - add unit und integration tests
 * - add docker file and instructions to run the app
 * - add documentation in code and in README file
-* - change last entry "datum" to "Zinsbindungsende"
-* - Add info buttons in input form
-* - Change datum format (dd-MM-YYYY)
-* - Show numbers in result table with coma and not with .
-* - Show numbers in result table with separator (1`000`000) for clarity
+* - Add info buttons in input form (with title?)
 * - Code refactoring
 * - Add additional checks for edge cases..
+* - Throw some custom exception..
+* DIfference between new BigDecimal and Bigdecimal.valueof() https://raphaeldelio.medium.com/the-difference-between-new-bigdecimal-and-bigdecimal-valueof-f08a4b7ce36d
 * */

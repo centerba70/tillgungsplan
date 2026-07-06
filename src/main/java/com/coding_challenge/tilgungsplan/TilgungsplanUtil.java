@@ -7,10 +7,14 @@ import java.time.format.DateTimeFormatter;
 
 public class TilgungsplanUtil {
 
-    private static final String DATE_FORMAT = "dd-MM-yyyy";
+    private static final String DATE_FORMAT = "dd.MM.yyyy";
     private static final DateTimeFormatter PATTERN = DateTimeFormatter.ofPattern(DATE_FORMAT);
 
-    public static BigDecimal round_big_dec(BigDecimal value, RoundingMode roundingMode) {
+    public static BigDecimal roundValue(BigDecimal value) {
+       return roundValue(value, RoundingMode.HALF_EVEN);
+    }
+
+    public static BigDecimal roundValue(BigDecimal value, RoundingMode roundingMode) {
         value = value.setScale(2, roundingMode);
         return value;
     }

@@ -26,10 +26,10 @@
     }
   </style>
   <meta charset="UTF-8">
-  <title>Fehler</title>
+  <title th:text="${@environment.getProperty('messages.error.title')}"></title>
 </head>
 <body>
-<tr> Einige angegebene Werte sind nicht valid, eine Berechnung des Tillgungsplans ist leider nicht möglich! </tr>
+<tr th:text="${@environment.getProperty('messages.error.invalid_input')}"></tr>
 <br><br>
 <div th:if="${ not#lists.isEmpty(inputErrors)}">
   <br>
@@ -52,6 +52,6 @@
 </div>
 <tr th:text="${tillgungsplanServiceException} ?: ${tillgungsplanServiceException}"> </tr>
   <br><br>
-  <a href="/">Bitte versuchen Sie es noch mal!</a>
+  <a href="/" th:text="${@environment.getProperty('messages.error.try_again')}"></a>
 </body>
 </html>

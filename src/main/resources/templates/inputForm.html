@@ -5,32 +5,28 @@
   <table>
     <tr>
       <h1>Tillgungsplan Rechner</h1>
-      <td>Darlehensbetrag:</td>
+      <td title="Insert it">Darlehensbetrag:</td>
       <td><label>
         <input type="text" th:field="*{darlehensbetrag}" />
       </label></td>
-     <!-- <td th:if="${#fields.hasErrors('darlehensbetrag')}" th:errors="*{darlehensbetrag}">Darlehensbetrag Fehler</td> -->
     </tr>
     <tr>
       <td>Zinssatz:</td>
       <td><label>
         <input type="text" th:field="*{zinssatz}" />
       </label></td>
-     <!-- <td th:if="${#fields.hasErrors('zinssatz')}" th:errors="*{zinssatz}">Zinssatz Fehler</td> -->
     </tr>
     <tr>
       <td>Anfängliche Tilgung:</td>
       <td><label>
         <input type="text" th:field="*{anfaenglichenTilgung}" />
       </label></td>
-      <td th:if="${#fields.hasErrors('anfaenglichenTilgung')}" th:errors="*{anfaenglichenTilgung}">Anfängliche Tilgung Fehler</td>
     </tr>
     <tr>
       <td>Zinsbindung:</td>
       <td><label>
         <input type="text" th:field="*{zinsbindung}" />
       </label></td>
-      <td th:if="${#fields.hasErrors('zinsbindung')}" th:errors="*{zinsbindung}">Zinsbindung Fehler</td>
     </tr>
     <tr>
       <td>
