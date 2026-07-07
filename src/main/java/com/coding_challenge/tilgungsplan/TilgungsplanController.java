@@ -6,7 +6,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -18,10 +17,10 @@ public class TilgungsplanController implements WebMvcConfigurer {
     private static final String ERROR_PAGE = "error";
 
 
-    private TilgungsplanService tillgungsplanService;
+    private TilgungsplanService tilgungsplanService;
 
-    public TilgungsplanController(TilgungsplanService tillgungsplanService) {
-        this.tillgungsplanService = tillgungsplanService;
+    public TilgungsplanController(TilgungsplanService tilgungsplanService) {
+        this.tilgungsplanService = tilgungsplanService;
     }
 
     @GetMapping("/")
@@ -33,15 +32,15 @@ public class TilgungsplanController implements WebMvcConfigurer {
     public String inputForm(@Valid InputForm inputForm, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("inputErrors", bindingResult.getFieldErrors());
-            return ERROR_PAGE;
+            return INPUT_FORM_PAGE;
         }
-        model.addAttribute("tillgungsplanList", tillgungsplanService.calculateTilgung(inputForm));
+        model.addAttribute("tilgungsplanList", tilgungsplanService.calculateTilgung(inputForm));
         return RESULT_PAGE;
     }
 
     @ExceptionHandler(TilgungsplanServiceException.class)
     public String handleInvoiceScannerServiceException(TilgungsplanServiceException ex, Model model) {
-        model.addAttribute("tillgungsplanServiceException", ex.getMessage());
+        model.addAttribute("tilgungsplanServiceException", ex.getMessage());
         return ERROR_PAGE;  // TODO: throw some exception
     }
 }
@@ -49,12 +48,11 @@ public class TilgungsplanController implements WebMvcConfigurer {
 
 /*
 * TODO:
-* - add unit und integration tests
-* - add docker file and instructions to run the app
-* - add documentation in code and in README file
-* - Add info buttons in input form (with title?)
+*  - add some more unit test
+* - add documentation in code and in README file, with calculation rules
 * - Code refactoring
-* - Add additional checks for edge cases..
-* - Throw some custom exception..
+* - Add additional checks for edge cases, make sure that it works also with strange values or the cycle stops
+* - Throw some custom exceptions, ..
+* - Add some parameter checker with strategy pattern
 * DIfference between new BigDecimal and Bigdecimal.valueof() https://raphaeldelio.medium.com/the-difference-between-new-bigdecimal-and-bigdecimal-valueof-f08a4b7ce36d
 * */

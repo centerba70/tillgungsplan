@@ -1,39 +1,47 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
 <body>
 <form action="#" th:action="@{/}" th:object="${inputForm}" method="post">
   <table>
     <tr>
-      <h1>Tillgungsplan Rechner</h1>
-      <td title="Insert it">Darlehensbetrag:</td>
+      <h1>Tilgungsplan Rechner</h1>
+      <td>Darlehensbetrag (in €):</td>
       <td><label>
-        <input type="text" th:field="*{darlehensbetrag}" />
+        <input type="text" th:field="*{darlehensbetrag}" th:placeholder="${#numbers.formatCurrency(1000000)}">
       </label></td>
+      <td th:if="${#fields.hasErrors('darlehensbetrag')}" th:errors="*{darlehensbetrag}">Darlehensbetrag Fehler</td>
     </tr>
     <tr>
-      <td>Zinssatz:</td>
+      <td>Zinssatz (%):</td>
       <td><label>
-        <input type="text" th:field="*{zinssatz}" />
+        <input type="text" th:field="*{zinssatz}" placeholder="2.12 %" />
       </label></td>
+       <td th:if="${#fields.hasErrors('zinssatz')}" th:errors="*{zinssatz}">Zinssatz Fehler</td>
     </tr>
     <tr>
-      <td>Anfängliche Tilgung:</td>
+      <td>Anfängliche Tilgung (%):</td>
       <td><label>
-        <input type="text" th:field="*{anfaenglichenTilgung}" />
+        <input type="text" th:field="*{anfaenglicheTilgung}" placeholder="2 %"/>
       </label></td>
+      <td th:if="${#fields.hasErrors('anfaenglicheTilgung')}" th:errors="*{anfaenglicheTilgung}">Anfaengliche Tilgung Fehler</td>
     </tr>
     <tr>
-      <td>Zinsbindung:</td>
+      <td>Zinsbindung (in Jahren):</td>
       <td><label>
-        <input type="text" th:field="*{zinsbindung}" />
+        <input type="text" th:field="*{zinsbindung}" placeholder="10" />
       </label></td>
+      <td th:if="${#fields.hasErrors('zinsbindung')}" th:errors="*{zinsbindung}">Zinsbindung Fehler</td>
     </tr>
     <tr>
       <td>
-        <button type="submit" value="submit">Submit</button>
+        <br>
+        <button type="submit" value="submit">Berechnen</button>
       </td>
     </tr>
   </table>
+  <div th:if="${#fields.hasGlobalErrors()}">
+    <p th:each="err : ${#fields.globalErrors()}" th:text="${err}" class="error" />
+  </div>
 </form>
 </body>
 </html>

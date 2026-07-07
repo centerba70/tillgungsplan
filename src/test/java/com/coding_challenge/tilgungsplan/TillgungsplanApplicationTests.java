@@ -53,7 +53,7 @@ class TillgungsplanApplicationTests {
 		MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
 		multiValueMap.add("darlehensbetrag", String.valueOf(inputForm.darlehensbetrag()));
 		multiValueMap.add("zinssatz", String.valueOf(inputForm.zinssatz()));
-		multiValueMap.add("anfaenglichenTilgung", String.valueOf(inputForm.anfaenglichenTilgung()));
+		multiValueMap.add("anfaenglicheTilgung", String.valueOf(inputForm.anfaenglicheTilgung()));
 		multiValueMap.add("zinsbindung", String.valueOf(inputForm.zinsbindung()));
 
 		// Then
@@ -68,7 +68,7 @@ class TillgungsplanApplicationTests {
 		MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
 		multiValueMap.add("darlehensbetrag", String.valueOf(inputForm.darlehensbetrag()));
 		multiValueMap.add("zinssatz", String.valueOf(inputForm.zinssatz()));
-		multiValueMap.add("anfaenglichenTilgung", String.valueOf(inputForm.anfaenglichenTilgung()));
+		multiValueMap.add("anfaenglicheTilgung", String.valueOf(inputForm.anfaenglicheTilgung()));
 		multiValueMap.add("zinsbindung", String.valueOf(inputForm.zinsbindung()));
 
 

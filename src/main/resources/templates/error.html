@@ -29,29 +29,8 @@
   <title th:text="${@environment.getProperty('messages.error.title')}"></title>
 </head>
 <body>
-<tr th:text="${@environment.getProperty('messages.error.invalid_input')}"></tr>
-<br><br>
-<div th:if="${ not#lists.isEmpty(inputErrors)}">
-  <br>
-  <table id="errorlist">
-    <tr>
-      <thead>
-        <th>Feld</th>
-        <th>abgelehnter Wert</th>
-        <th>Fehler Beschreibung</th>
-      </thead>
-    </tr>
-      <tbody>
-      <tr th:each="error : ${inputErrors}">
-        <td th:text="${error.getField()}"></td>
-        <td th:text="${error.getRejectedValue()}"></td>
-        <td th:text="${error.getDefaultMessage()}"></td>
-      </tr>
-      </tbody>
-  </table>
-</div>
-<tr th:text="${tillgungsplanServiceException} ?: ${tillgungsplanServiceException}"> </tr>
+<tr th:text="${tilgungsplanServiceException} ?: ${tilgungsplanServiceException}"> </tr>
   <br><br>
   <a href="/" th:text="${@environment.getProperty('messages.error.try_again')}"></a>
 </body>
-</html>
+</html>  <!-- TODO: test this -->

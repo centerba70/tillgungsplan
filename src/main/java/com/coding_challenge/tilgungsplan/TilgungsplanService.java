@@ -2,10 +2,10 @@ package com.coding_challenge.tilgungsplan;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -19,87 +19,64 @@ import static com.coding_challenge.tilgungsplan.TilgungsplanUtil.*;
 public class TilgungsplanService {
     // TODO: add null safety checks with JSpecify (Spring boot 4)
 
+    private TilgungsplanHelper tilgungsplanHelper;
+
+    private final LocalDate tilgungStartingDate;
+
     private static final Logger logger = LoggerFactory.getLogger(TilgungsplanService.class);
 
-    // TODO: Create a class with this parameters and pass it to this method?
+    public TilgungsplanService(TilgungsplanHelper tilgungsplanHelper, @Value("${tilgung.starting_date}") String tilgungStartingDate) {
+        this.tilgungStartingDate = formatDate(tilgungStartingDate);
+        this.tilgungsplanHelper = tilgungsplanHelper;
+    }
+
     public List<Tilgungsplan> calculateTilgung(InputForm inputForm) {
         // TODO: refactor
         // get all the inserted values from Inputform
-        BigDecimal anfaenglichenTilgung = inputForm.anfaenglichenTilgung();
+        BigDecimal anfaenglichenTilgung = inputForm.anfaenglicheTilgung();
         BigDecimal zinssatz = inputForm.zinssatz();
-        long zinsbindung = inputForm.zinsbindung(); // in Jahren
+        long zinsbindung = inputForm.zinsbindung();
 
         // Create Darlehensbetrag object
         Darlehensbetrag darlehensbetrag = Darlehensbetrag.builder()
                 .vorMonatBetrag(roundValue(inputForm.darlehensbetrag()))
                 .laufenderMonatBetrag(roundValue(inputForm.darlehensbetrag()))
-                .fixedRate(roundValue(calculateFixedRate(roundValue(inputForm.darlehensbetrag()), anfaenglichenTilgung, zinssatz)))
+                .fixedRate(roundValue(tilgungsplanHelper.calculateFixedRate(roundValue(inputForm.darlehensbetrag()), anfaenglichenTilgung, zinssatz)))
                 .build();
 
-
         // Calculate tilgung periods and number of months
-        LocalDate tilgungStartingDate = LocalDate.of(2015, 11, 30); // TODO: change this
         LocalDate tilgungEndingDate = tilgungStartingDate.plusYears(zinsbindung);
 
         // Create list of tilgungs and add starting tilgung
-        Tilgungsplan startingPlan = calculateStartingTilgungsplan(tilgungStartingDate, darlehensbetrag);
+        Tilgungsplan startingPlan = tilgungsplanHelper.calculateStartingTilgungsplan(tilgungStartingDate, darlehensbetrag);
         List<Tilgungsplan> tilgungsplanPerMonths = new ArrayList<>();
         tilgungsplanPerMonths.add(startingPlan);
 
         // Set up iteration variables
-        int i = 0;
+        int month_counter = 0;
         long tilgungDurationInMonths = ChronoUnit.MONTHS.between(tilgungStartingDate, tilgungEndingDate);
 
         // Start iteration
-        while (i < tilgungDurationInMonths) {
-            BigDecimal tilgungsPerMonth = calculateTilgungPerMonth(darlehensbetrag.getVorMonatBetrag(), anfaenglichenTilgung);
-            BigDecimal zinsenPerMonth = roundValue(new BigDecimal(darlehensbetrag.getVorMonatBetrag().doubleValue() / 100 * zinssatz.doubleValue() / 12));
+        while (month_counter < tilgungDurationInMonths) {
+            BigDecimal tilgungsPerMonth = tilgungsplanHelper.calculateTilgungPerMonth(darlehensbetrag.getVorMonatBetrag(), anfaenglichenTilgung);
+            BigDecimal zinsenPerMonth = tilgungsplanHelper.calculateZinsenPerMonth(darlehensbetrag.getVorMonatBetrag(), zinssatz);
             if (!darlehensbetrag.getFixedRate().equals(tilgungsPerMonth.add(zinsenPerMonth))) {
                 // adjust tilgung
                 tilgungsPerMonth = darlehensbetrag.getFixedRate().subtract(zinsenPerMonth);
             }
             darlehensbetrag.setLaufenderMonatBetrag(darlehensbetrag.getVorMonatBetrag().subtract(tilgungsPerMonth));
-            tilgungsplanPerMonths.add(new Tilgungsplan(formatDate(tilgungStartingDate.plusMonths(i).with(TemporalAdjusters.lastDayOfMonth())),
+            tilgungsplanPerMonths.add(new Tilgungsplan(formatDate(tilgungStartingDate.plusMonths(month_counter).with(TemporalAdjusters.lastDayOfMonth())),
                     darlehensbetrag.getLaufenderMonatBetrag().negate(), zinsenPerMonth, tilgungsPerMonth, darlehensbetrag.getFixedRate()));
             darlehensbetrag.setVorMonatBetrag(darlehensbetrag.getLaufenderMonatBetrag());
             darlehensbetrag.setLaufenderMonatBetrag(new BigDecimal("0.0"));
-            i++;
+            month_counter++;
         }
 
         // add last resume element
-        Tilgungsplan endingPlan = calculateEndingTilgungsplan(tilgungEndingDate, darlehensbetrag, tilgungsplanPerMonths);
+        Tilgungsplan endingPlan = tilgungsplanHelper.calculateEndingTilgungsplan(tilgungEndingDate, darlehensbetrag, tilgungsplanPerMonths);
         tilgungsplanPerMonths.add(endingPlan);
 
         logger.info("Tilgungsplan erfolgreich erstellt. ");
         return tilgungsplanPerMonths;
-    }
-
-
-    private Tilgungsplan calculateStartingTilgungsplan(LocalDate startingDate, Darlehensbetrag darlehensbetrag) {
-        return new Tilgungsplan(formatDate(startingDate.with(TemporalAdjusters.lastDayOfMonth())), roundValue(darlehensbetrag.getVorMonatBetrag()).negate(), BigDecimal.ZERO,
-                roundValue(darlehensbetrag.getVorMonatBetrag()).negate(),
-                roundValue(darlehensbetrag.getVorMonatBetrag()).negate());
-    }
-
-    private Tilgungsplan calculateEndingTilgungsplan(LocalDate endingDate, Darlehensbetrag darlehensbetrag, List<Tilgungsplan> plans) {
-        return new Tilgungsplan(formatDate(endingDate), darlehensbetrag.getVorMonatBetrag().negate(),
-                plans.stream().map(Tilgungsplan::zinsen).reduce(BigDecimal.ZERO, BigDecimal::add),
-                plans.stream().skip(1).map(Tilgungsplan::tilgung).reduce(BigDecimal.ZERO, BigDecimal::add),
-                plans.stream().skip(1).map(Tilgungsplan::rate).reduce(BigDecimal.ZERO, BigDecimal::add));
-
-    }
-
-    private BigDecimal calculateFixedRate(BigDecimal darlehensbetrag, BigDecimal anfaenglichenTilgung, BigDecimal zinssatz) {
-        BigDecimal tillgungsPerMonth = calculateTilgungPerMonth(darlehensbetrag, anfaenglichenTilgung);
-        BigDecimal zinsenPerMonth = calculateZinsenPerMonth(darlehensbetrag, zinssatz);
-        return tillgungsPerMonth.add(zinsenPerMonth);
-    }
-
-    private BigDecimal calculateTilgungPerMonth(BigDecimal darlehensbetrag, BigDecimal anfaenglichenTilgung) {
-        return roundValue(new BigDecimal(darlehensbetrag.doubleValue() / 100 * anfaenglichenTilgung.doubleValue() / 12), RoundingMode.FLOOR);
-    }
-
-    private BigDecimal calculateZinsenPerMonth(BigDecimal darlehensbetrag, BigDecimal zinssatz) {
-        return roundValue(new BigDecimal(darlehensbetrag.doubleValue() / 100 * zinssatz.doubleValue() / 12));
     }
 }

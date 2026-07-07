@@ -14,7 +14,7 @@ class TillgungsplanServiceTest {
 
     @BeforeEach
     void setUp() {
-        this.tillgungsplanService = new TilgungsplanService();
+        this.tillgungsplanService = new TilgungsplanService(new TilgungsplanHelper(), "30.05.2015");
     }
 
     @Test
@@ -50,3 +50,5 @@ class TillgungsplanServiceTest {
         assertEquals("41199.60", lastTilgungsplan.rate().toString());
     }
 }
+
+// TODO: add some more not working case to test app resiliance?

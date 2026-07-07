@@ -23,4 +23,8 @@ public class TilgungsplanUtil {
         return localDate.format(PATTERN);
     }
 
+    public static LocalDate formatDate(String localDate) {
+        return LocalDate.parse(localDate, PATTERN);
+    }
+
 }
