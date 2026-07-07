@@ -7,7 +7,7 @@
       <h1>Tilgungsplan Rechner</h1>
       <td>Darlehensbetrag (in €):</td>
       <td><label>
-        <input type="text" th:field="*{darlehensbetrag}" th:placeholder="${#numbers.formatCurrency(1000000)}">
+        <input type="text" th:field="*{darlehensbetrag}" th:placeholder="${#numbers.formatCurrency(100000)}">
       </label></td>
       <td th:if="${#fields.hasErrors('darlehensbetrag')}" th:errors="*{darlehensbetrag}">Darlehensbetrag Fehler</td>
     </tr>

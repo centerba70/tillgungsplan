@@ -31,8 +31,6 @@ public class TilgungsplanService {
     }
 
     public List<Tilgungsplan> calculateTilgung(InputForm inputForm) {
-        // TODO: refactor
-        // get all the inserted values from Inputform
         BigDecimal anfaenglichenTilgung = inputForm.anfaenglicheTilgung();
         BigDecimal zinssatz = inputForm.zinssatz();
         long zinsbindung = inputForm.zinsbindung();

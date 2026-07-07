@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @TestPropertySource(locations = "classpath:application.properties")
 @AutoConfigureMockMvc
-class TillgungsplanApplicationTests {
+class TilgungsplanApplicationTests {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -37,7 +37,7 @@ class TillgungsplanApplicationTests {
 	@Test
 	void loadFirstPage() throws Exception {
 		this.mockMvc.perform(get("/")).andDo(print()).andExpect(status().isOk())
-				.andExpect(content().string(containsString("Tillgungsplan Rechner")));
+				.andExpect(content().string(containsString("Tilgungsplan Rechner")));
 	}
 
 	@Test
