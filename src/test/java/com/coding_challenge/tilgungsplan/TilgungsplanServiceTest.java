@@ -50,5 +50,3 @@ class TilgungsplanServiceTest {
         assertEquals("41199.60", lastTilgungsplan.rate().toString());
     }
 }
-
-// TODO: add some more not working case to test app resiliance?

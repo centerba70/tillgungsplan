@@ -17,13 +17,12 @@ import static com.coding_challenge.tilgungsplan.TilgungsplanUtil.*;
 
 @Service
 public class TilgungsplanService {
-    // TODO: add null safety checks with JSpecify (Spring boot 4)
 
     private TilgungsplanHelper tilgungsplanHelper;
 
     private final LocalDate tilgungStartingDate;
 
-    private static final Logger logger = LoggerFactory.getLogger(TilgungsplanService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TilgungsplanService.class);
 
     public TilgungsplanService(TilgungsplanHelper tilgungsplanHelper, @Value("${tilgung.starting_date}") String tilgungStartingDate) {
         this.tilgungStartingDate = formatDate(tilgungStartingDate);
@@ -56,17 +55,18 @@ public class TilgungsplanService {
 
         // Start iteration
         while (month_counter < tilgungDurationInMonths) {
-            BigDecimal tilgungsPerMonth = tilgungsplanHelper.calculateTilgungPerMonth(darlehensbetrag.getVorMonatBetrag(), anfaenglichenTilgung);
+            // Calculate monthly Zinsen and Tilgung
             BigDecimal zinsenPerMonth = tilgungsplanHelper.calculateZinsenPerMonth(darlehensbetrag.getVorMonatBetrag(), zinssatz);
-            if (!darlehensbetrag.getFixedRate().equals(tilgungsPerMonth.add(zinsenPerMonth))) {
-                // adjust tilgung
-                tilgungsPerMonth = darlehensbetrag.getFixedRate().subtract(zinsenPerMonth);
-            }
+            BigDecimal tilgungsPerMonth = darlehensbetrag.getFixedRate().subtract(zinsenPerMonth);
+
+            // Update data and append tilgungsplan for current month
             darlehensbetrag.setLaufenderMonatBetrag(darlehensbetrag.getVorMonatBetrag().subtract(tilgungsPerMonth));
             tilgungsplanPerMonths.add(new Tilgungsplan(formatDate(tilgungStartingDate.plusMonths(month_counter).with(TemporalAdjusters.lastDayOfMonth())),
                     darlehensbetrag.getLaufenderMonatBetrag().negate(), zinsenPerMonth, tilgungsPerMonth, darlehensbetrag.getFixedRate()));
             darlehensbetrag.setVorMonatBetrag(darlehensbetrag.getLaufenderMonatBetrag());
             darlehensbetrag.setLaufenderMonatBetrag(new BigDecimal("0.0"));
+            
+            LOGGER.debug("Iteration {} erfolgreich mit darlehensbetrag={}", month_counter, darlehensbetrag);
             month_counter++;
         }
 
@@ -74,7 +74,7 @@ public class TilgungsplanService {
         Tilgungsplan endingPlan = tilgungsplanHelper.calculateEndingTilgungsplan(tilgungEndingDate, darlehensbetrag, tilgungsplanPerMonths);
         tilgungsplanPerMonths.add(endingPlan);
 
-        logger.info("Tilgungsplan erfolgreich erstellt. ");
+        LOGGER.info("Tilgungsplan erfolgreich erstellt. ");
         return tilgungsplanPerMonths;
     }
 }

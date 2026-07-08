@@ -8,8 +8,8 @@ import jakarta.validation.groups.Default;
 
 import java.math.BigDecimal;
 
-@GroupSequence({FieldCheck.class, InputForm.class})
 @ConsistentTilgungsplan(groups = Default.class)
+@GroupSequence({FieldCheck.class, InputForm.class})
 public record InputForm(
         @Digits(integer = 10, fraction = 2, groups = FieldCheck.class)
         @DecimalMin(value = "0.0", inclusive = false, groups = FieldCheck.class)

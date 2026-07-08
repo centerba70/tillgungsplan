@@ -43,7 +43,7 @@ public class TilgungsplanController implements WebMvcConfigurer {
     }
 
     @ExceptionHandler(TilgungsplanServiceException.class)
-    public String handleInvoiceScannerServiceException(TilgungsplanServiceException ex, Model model) {
+    public String handleTilgungsplanServiceException(TilgungsplanServiceException ex, Model model) {
         model.addAttribute("tilgungsplanServiceException", ex.getMessage());
         return ERROR_PAGE;  // TODO: throw some exception
     }
@@ -52,9 +52,8 @@ public class TilgungsplanController implements WebMvcConfigurer {
 
 /*
  * TODO:
- *  - add some more unit test
  * - add documentation in code and in README file, with calculation rules
- * - Code refactoring
  * - Throw some custom exceptions, ..
+ * -
  * DIfference between new BigDecimal and Bigdecimal.valueof() https://raphaeldelio.medium.com/the-difference-between-new-bigdecimal-and-bigdecimal-valueof-f08a4b7ce36d
  * */

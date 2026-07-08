@@ -20,7 +20,7 @@ public class TotalRatesInputValidation implements InputValidationStrategy {
     public boolean validate(InputForm inputForm) {
         // Calculate Monthly Rate
         BigDecimal fixedRate = tilgungsplanHelper.calculateFixedRate(inputForm.darlehensbetrag(), inputForm.anfaenglicheTilgung(), inputForm.zinssatz());
-        // Total amount of Rates within the Zinsbindung period must be smaller than the Darlehensbetrag
+        // Der Gesamtbetrag der Zinszahlungen innerhalb der Zinsbindungsfrist muss geringer sein als der Darlehensbetrag.
         return (fixedRate.doubleValue() * NUMBER_OF_MONTHS * inputForm.zinsbindung()) < inputForm.darlehensbetrag().doubleValue();
     }
 }
